@@ -21,12 +21,9 @@ fn main() {
 
     for arg in &args[1..] {
         if arg.starts_with('-') {
-            let ascidir = arg[1..].to_string();
+            let ascidir = arg.strip_prefix('-').unwrap_or_default().to_string();
+            // let ascidir = arg[1..].to_string();
             flags.mymaxx = ascidir.trim().parse().unwrap_or_default();
-            //flags.mymaxx = match ascidir.trim().parse() {
-            //    Ok(num) => num,
-            //    Err(_) => 0,
-            //};
 
             for c in ascidir.chars() {
                 if c == 'a' {
@@ -43,14 +40,12 @@ fn main() {
             }
         } else if arg.starts_with("+/") {
             flags.init_search = true;
-            flags.ssearch = arg[2..].to_string();
+            //flags.ssearch = arg[2..].to_string();
+            flags.ssearch = arg.strip_prefix("+/").unwrap_or_default().to_string();
         } else if arg.starts_with("+") {
-            let offset_for_char = arg[1..].to_string();
+            //let offset_for_char = arg[1..].to_string();
+            let offset_for_char = arg.strip_prefix('+').unwrap_or_default().to_string();
             flags.mymaxy = offset_for_char.trim().parse().unwrap_or_default();
-            //flags.mymaxy = match offset_for_char.trim().parse() {
-            //    Ok(num) => num,
-            //    Err(_) => 0,
-            //};
         } else {
             // everything I put in files!
             flags.files.push(arg.to_string());
