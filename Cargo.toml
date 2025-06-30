@@ -1,5 +1,4 @@
-[package]
-name = "rvi-clone"
+[workspace.package]
 description = "A rust bvi clone."
 version = "0.10.0"
 authors = ["Mile Davidovic <mile.davidovic@gmail.com>"]
@@ -9,33 +8,39 @@ readme = "README.md"
 keywords = ["rmore", "rvi", "hex", "bmore", "bvi"]
 categories = ["command-line-utilities"]
 license-file = "LICENSE.txt"
-resolver="3"
-
-include = [
-    "/Cargo.*",
-    "/LICENSE",
-    "/README.md",
-    "/src/**/*",
-]
-[[bin]]
-name = "rmore"
-path = "src/main.rs"
-
-[features]
-default = []
-binaries = []
-
-[profile.release]
-strip = "debuginfo"
-panic = "abort"
-codegen-units = 1
-lto = true
-
-[profile.bench]
-debug = true
-
-[profile.test]
-debug = true
+resolver = "3"
 
 [workspace]
-members = []
+members = [ "rvi", "rmore", "util"]
+
+[profile.dev]
+opt-level = 0
+debug = true
+rpath = false
+lto = false
+debug-assertions = true
+codegen-units = 4
+
+[profile.release]
+opt-level = 3
+debug = false
+rpath = false
+lto = true
+debug-assertions = false
+codegen-units = 1
+
+[profile.test]
+opt-level = 1
+debug = true
+rpath = false
+lto = false
+debug-assertions = true
+codegen-units = 4
+
+[profile.bench]
+opt-level = 3
+debug = false
+rpath = false
+lto = true
+debug-assertions = false
+codegen-units = 1

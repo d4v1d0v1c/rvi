@@ -1,19 +1,14 @@
 // Usage: bmore [-acdir] [-lines] [+linenum | +/pattern] name1 name2 ...
 
-#[derive(Debug, Default)]
-struct Options {
-    ascii: bool,
-    c_flag: bool,
-    d_flag: bool,
-    ignore_case: bool,
-    r_flag: bool,
-    init_search: bool,
-    ssearch: String,
-    mymaxx: i32,
-    mymaxy: i32,
-    files: Vec<String>,
+use util::{COPYRIGHT, Options};
+
+fn main() {
+    let opts = Options::parse().unwrap_or_default();
+    println!("copyright: {COPYRIGHT:?}");
+    println!("{opts:#?}");
 }
 
+/*
 use std::env;
 fn main() {
     let mut flags = Options::default();
@@ -53,3 +48,4 @@ fn main() {
     }
     println!("flags: {flags:?}");
 }
+*/
