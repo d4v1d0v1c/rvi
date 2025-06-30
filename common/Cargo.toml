@@ -1,0 +1,8 @@
+[package]
+name = "common"
+version = "0.1.0"
+edition = "2024"
+resolver = "3"
+
+[dependencies]
+# (none yet—you can add crates here if the *library* itself needs them)

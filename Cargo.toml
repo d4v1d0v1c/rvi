@@ -1,0 +1,28 @@
+[workspace.package]
+name = "rvi-clone"
+description = "A tiny library providing a GPU-powered pixel frame buffer."
+version = "0.10.0"
+authors = ["Mile Davidovic <mile.davidovic@gmail.com>"]
+edition = "2024"
+resolver = "3"
+repository = "https://github.com/d4v1d0v1c/rvi"
+readme = "README.md"
+keywords = ["rmore", "rvi", "hex", "bmore", "bvi"]
+categories = ["command-line-utilities"]
+license-file = "LICENSE.txt"
+
+include = [
+    "/Cargo.*",
+    "/LICENSE",
+    "/README.md",
+    "/src/**/*",
+]
+
+[workspace.dependencies]
+
+[workspace]
+members = [
+    "rvi",
+    "rmore",
+    "common"
+]
