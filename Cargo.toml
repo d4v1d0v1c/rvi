@@ -1,15 +1,15 @@
-[workspace.package]
+[package]
 name = "rvi-clone"
-description = "A tiny library providing a GPU-powered pixel frame buffer."
+description = "A rust bvi clone."
 version = "0.10.0"
 authors = ["Mile Davidovic <mile.davidovic@gmail.com>"]
 edition = "2024"
-resolver = "3"
 repository = "https://github.com/d4v1d0v1c/rvi"
 readme = "README.md"
 keywords = ["rmore", "rvi", "hex", "bmore", "bvi"]
 categories = ["command-line-utilities"]
 license-file = "LICENSE.txt"
+resolver="3"
 
 include = [
     "/Cargo.*",
@@ -17,12 +17,25 @@ include = [
     "/README.md",
     "/src/**/*",
 ]
+[[bin]]
+name = "rmore"
+path = "src/main.rs"
 
-[workspace.dependencies]
+[features]
+default = []
+binaries = []
+
+[profile.release]
+strip = "debuginfo"
+panic = "abort"
+codegen-units = 1
+lto = true
+
+[profile.bench]
+debug = true
+
+[profile.test]
+debug = true
 
 [workspace]
-members = [
-    "rvi",
-    "rmore",
-    "common"
-]
+members = []
