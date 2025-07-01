@@ -4,18 +4,18 @@ version = 4
 
 [[package]]
 name = "rmore"
-version = "0.0.0"
+version = "0.10.0"
 dependencies = [
  "util",
 ]
 
 [[package]]
 name = "rvi"
-version = "0.0.0"
+version = "0.10.0"
 dependencies = [
  "util",
 ]
 
 [[package]]
 name = "util"
-version = "0.1.0"
+version = "0.10.0"
