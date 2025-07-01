@@ -41,7 +41,7 @@ impl Options {
                 opts.init_search = true;
                 //flags.ssearch = arg[2..].to_string();
                 opts.ssearch = arg.strip_prefix("+/").unwrap_or_default().to_string();
-            } else if arg.starts_with("+") {
+            } else if arg.starts_with('+') {
                 //let offset_for_char = arg[1..].to_string();
                 let offset_for_char = arg.strip_prefix('+').unwrap_or_default().to_string();
                 opts.mymaxy = offset_for_char.trim().parse().unwrap_or_default();
