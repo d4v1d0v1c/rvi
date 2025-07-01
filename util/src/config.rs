@@ -2,16 +2,16 @@ use std::env;
 
 #[derive(Debug, Default)]
 pub struct Options {
-    ascii: bool,
-    c_flag: bool,
-    d_flag: bool,
-    ignore_case: bool,
-    r_flag: bool,
-    init_search: bool,
-    ssearch: String,
-    mymaxx: i32,
-    mymaxy: i32,
-    files: Vec<String>,
+    pub ascii: bool,
+    pub c_flag: bool,
+    pub d_flag: bool,
+    pub ignore_case: bool,
+    pub r_flag: bool,
+    pub init_search: bool,
+    pub ssearch: String,
+    pub files: Vec<String>,
+    pub mymaxx: u16,
+    pub mymaxy: u16,
 }
 
 impl Options {

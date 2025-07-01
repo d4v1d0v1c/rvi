@@ -10,3 +10,4 @@ categories = ["command-line-utilities"]
 
 [dependencies]
 util  = { version = "0.10.0", path = "../util" }
+termion = { version = "1" }

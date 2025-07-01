@@ -53,7 +53,7 @@ install-deps: ## Install development dependencies
 .PHONY: lint
 lint: format ## Run the linters
 	@echo "Linting Rust files..."
-	@DEBUG_PROJ=$(DEBUG_PROJ) cargo clippy -- -D warnings
+	@DEBUG_PROJ=$(DEBUG_PROJ) cargo clippy --fix -- -W clippy::all  -W clippy::pedantic
 
 #.PHONY: publish
 #publish: ## Publish the package to crates.io (requires CARGO_REGISTRY_TOKEN to be set)

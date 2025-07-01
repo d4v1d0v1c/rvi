@@ -5,3 +5,6 @@ authors = ["Mile Davidovic <mile.davidovic@gmail.com>"]
 edition = "2024"
 keywords = ["rmore", "rvi", "hex", "bmore", "bvi"]
 categories = ["command-line-utilities"]
+
+[dependencies]
+termion = { version = "1" }
