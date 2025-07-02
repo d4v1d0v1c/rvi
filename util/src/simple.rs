@@ -30,51 +30,40 @@ impl Terminal {
     }
 
     pub fn initterm() {
-        dbg!("initterm");
     }
 
     pub fn set_tty() {
-        dbg!("set_tty");
     }
 
     pub fn reset_tty() {
-        dbg!("reset_tty");
         print!("{}", termion::clear::All);
     }
 
     pub fn sig() {
-        dbg!("sig");
     }
 
     pub fn doshell(_cmd: &str) {
-        dbg!("doshell: {_cmd}");
     }
 
     pub fn highlight() {
-        dbg!("highlight");
     }
 
     pub fn normal() {
-        dbg!("normal");
     }
 
     pub fn clearscreen() {
-        dbg!("clearscreen");
         print!("{}", termion::clear::All);
     }
 
     pub fn home() {
-        dbg!("home");
         print!("{}", termion::cursor::Goto(1, 1));
     }
 
     pub fn cleartoeol() {
-        dbg!("cleartoeol");
         print!("{}", termion::clear::AfterCursor);
     }
 
     pub fn vgetc() -> Result<Key, std::io::Error> {
-        dbg!("vgetc: {0}");
         loop {
             if let Some(key) = io::stdin().lock().keys().next() {
                 return key;

@@ -1,4 +1,3 @@
-use std::fs::File;
 use std::io::{self, Read};
 
 pub struct ByteReader<R: Read> {
@@ -13,14 +12,12 @@ impl<R: Read> ByteReader<R> {
         }
     }
 
-    pub fn next_byte(&mut self) -> io::Result<Option<u8>> {
-        let mut tmp = [0u8; 1];
-        match self.reader.read(&mut tmp)? {
-            0 => Ok(None),
-            1 => {
-                Ok(Some(tmp[0]))
-            }
-            _ => unreachable!(),
+    pub fn nextchar(&mut self, byte : &mut u8) -> io::Result<usize> {
+        let mut buf = [0u8; 1];
+        let n = self.reader.read(&mut buf)?;
+        if n == 1 {
+            *byte = buf[0];
         }
+        Ok(n) // 0 eof
     }
 }

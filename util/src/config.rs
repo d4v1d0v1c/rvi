@@ -46,11 +46,9 @@ impl Options {
                 let offset_for_char = arg.strip_prefix('+').unwrap_or_default().to_string();
                 opts.mymaxy = offset_for_char.trim().parse().unwrap_or_default();
             } else {
-                // everything I put in files!
                 opts.files.push(arg.to_string());
             }
         }
-        println!("flags: {opts:?}");
         Ok(opts)
     }
 }
