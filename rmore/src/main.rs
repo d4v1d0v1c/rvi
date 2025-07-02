@@ -235,7 +235,7 @@ impl BMore {
                 Terminal::normal();
                 //fflush(stdout);
             }
-            if let Err(error) = self.process_keypress() {
+            if let Err(error) = self.process_keypress(&mut reader) {
                 die(error);
             }
             self.prompt = 1;
@@ -252,18 +252,12 @@ impl BMore {
         }
     }
 
-    fn fseeko(&mut self, off: i32) {
+    fn fseeko(&mut self, off: i32, reader: &mut ByteReader<Box<File>>) {
 
-        if self.precount < 1 {
-             self.precount = 1;
-        }
-        print!("\r");
-        Terminal::cleartoeol();
-
+        let _ = reader.fseeko(off as u64);
     }
 
-    fn process_keypress(&mut self) -> std::result::Result<(), std::io::Error> {
-        let mut count : i32 = 0;
+    fn process_keypress(&mut self, reader: &mut ByteReader<Box<File>>) -> std::result::Result<(), std::io::Error> {
         let pressed_key = Terminal::vgetc()?;
         match pressed_key {
             Key::Ctrl('Q') | Key::Char('q') => {
@@ -282,37 +276,81 @@ impl BMore {
             }
             Key::Ctrl('z') => {
              	self.dup_print_flag = true;
-				if self.precount > 0 { 
+        				if self.precount > 0 { 
                     self.z_line = self.precount;
                 } 
                 self.to_print = self.z_line;   
             }					            
             /* Scroll k lines [current scroll size, initially 11]* */
             Key::Char('d') => {
-                dbg!("Press d");
+                if self.precount > 0 {
+                    self.d_line = self.precount;
+                }
+                self.to_print = self.d_line;
             }
             /*** REDRAW SCREEN ***/
             Key::Char('L') => {
-                dbg!("Press L");
                 Terminal::clearscreen();
+                self.to_print = self.maxy + 1;
+                self.fseeko(self.screen_home, reader);
+                self.bytepos = self.screen_home;
             }
             /* Skip backwards k screenfuls of text [1] */
             Key::Char('b') => {
-                dbg!("Press b");
+                if self.precount < 1 {
+                    self.precount = 1;
+                }
+                print!("...back {} page", self.precount);
+     						if self.precount > 1 {
+							      print!("s\r\n");
+						    } else {
+							      print!("\r\n");
+						    }
+						    self.screen_home -= (self.maxy + 1) * self.out_len;
+						    if self.screen_home < 0 {
+                    self.screen_home = 0;
+						    } 
+						    self.fseeko(self.screen_home, reader);
+						    self.bytepos = self.screen_home;
+						    self.to_print = self.maxy + 1;
             }
             /* Skip forward k screenfuls of bytes [1] */
             Key::Char('f') => {
+                let mut count : i32 = 0;
+                if self.precount < 1 {
+                 self.precount = 1;
+                }
                 count = self.maxy * self.precount;
+                print!("\r");
+                Terminal::cleartoeol();
                 print!("\n...skipping {} line", count);
+                if count > 0 {
+                    print!("s\r\n\r\n");
+                } else {
+                    print!("\r\n\r\n");                
+                }
                 self.screen_home += (count + self.maxy)*self.out_len;
-                self.fseeko(self.screen_home);
+                self.fseeko(self.screen_home, reader);
+                self.bytepos = self.screen_home;
             }
             /* Skip forward k lines of bytes [1] */
             Key::Char('s') => {
+                let mut count : i32 = 0;
+                if self.precount < 1 {
+                 self.precount = 1;
+                }
                 count = self.precount;
+                print!("\r");
+                Terminal::cleartoeol();
                 print!("\n...skipping {} line", count);
+                if count > 0 {
+                    print!("s\r\n\r\n");
+                } else {
+                    print!("\r\n\r\n");                
+                }
                 self.screen_home += (count + self.maxy)*self.out_len;
-                self.fseeko(self.screen_home);
+                self.fseeko(self.screen_home, reader);
+                self.bytepos = self.screen_home;
             }
             /**** Search String ****/
             Key::Char('/') => {
