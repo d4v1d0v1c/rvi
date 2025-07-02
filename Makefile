@@ -46,9 +46,9 @@ clean: ## Remove generated and temporary files
 install-deps: ## Install development dependencies
 	@echo "Installing dependencies..."
 	@rustup component add rustfmt clippy
-#	@cargo install cargo-tarpaulin
-#	@cargo install cargo-audit
-#	@cargo install cargo-nextest
+	@cargo install cargo-tarpaulin
+	@cargo install cargo-audit
+	@cargo install cargo-nextest
 
 .PHONY: lint
 lint: format ## Run the linters

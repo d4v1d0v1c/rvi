@@ -182,7 +182,18 @@ impl BMore {
 
     pub fn run(&mut self) {
         self.set_size();        
-        let current_file = self.open_file().unwrap();
+        let current_file_result = self.open_file();
+        let current_file = match current_file_result {
+            Ok(file) => file,
+            Err(e) => {
+                eprintln!("Problem opening the file: {e}");
+                return;
+            }
+        };
+        //let current_file = self.open_file().unwrap_or_else(|error| {
+        //    panic!("Problem opening the file: {error:?}");
+        //});
+
         let mut reader = ByteReader::new(Box::new(current_file));        
         self.bytepos = 0;
         self.screen_home = 0;
