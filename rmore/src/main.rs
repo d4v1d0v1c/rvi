@@ -7,44 +7,44 @@ use std::io::{self, ErrorKind};
 use std::path::Path;
 use std::process::exit;
 use termion::event::Key;
-use util::{COPYRIGHT, Options, Terminal, AnzAdd, USAGE};
+use util::{ANZADD, Options, Terminal,COPYRIGHT, USAGE};
 pub use bytereader::ByteReader;
 
 pub struct BMore {
     terminal: Terminal,
     flags: Options,
     name: String,
-    maxx: u16,
-    maxy: u16,
-    mymaxx: u16,
-    mymaxy: u16,
-    out_len: u16,
+    maxx: i32,
+    maxy: i32,
+    mymaxx: i32,
+    mymaxy: i32,
+    out_len: i32,
     bytepos: i32,
     screen_home: i32,
     should_quit: bool,
-    prompt: u16,
-    to_print: u16,
+    prompt: i32,
+    to_print: i32,
     do_header: bool,
-    corr : u16,
+    corr : i32,
     dup_print_flag: bool,
-    precount : u16,
-    z_line : u16,
-    d_line : u16,
-    r_line : u16,
+    precount : i32,
+    z_line : i32,
+    d_line : i32,
+    r_line : i32,
 }
 
 
 impl BMore {
-    pub fn printline(&mut self, buf :&Vec<u8>, _num : u16) {
+    pub fn printline(&mut self, buf :&Vec<u8>, _num : i32) {
         print!("{:#08x}  ",self.bytepos);
-        let mut print_pos = 0_usize;
+        let mut print_pos : i32 = 0;
 
         if !self.flags.ascii {
             for byte in buf {
                 print!("{byte:02x} ");
                 print_pos += 1;
             }
-            while print_pos < self.out_len.into() {
+            while print_pos < self.out_len {
                print!("   ");   // three spaces per slot
                print_pos += 1;
             }
@@ -65,7 +65,7 @@ impl BMore {
             print!("{ch}");
         }
 
-        while print_pos < self.out_len.into() {
+        while print_pos < self.out_len {
             self.bytepos+=1;
             print!(" ");
             print_pos += 1;
@@ -73,7 +73,7 @@ impl BMore {
         print!("\r\n");
     }
 
-    pub fn printout(&mut self, reader:&mut ByteReader<Box<File>>, lns : u16) -> io::Result<()> {
+    pub fn printout(&mut self, reader:&mut ByteReader<Box<File>>, lns : i32) -> io::Result<()> {
         let mut lns = lns;
         if self.flags.c_flag {
             Terminal::clearscreen();
@@ -93,7 +93,7 @@ impl BMore {
         self.corr = 0;
 
         loop {
-            let mut num = 0;
+            let mut num : i32 = 0;
             let mut buffer1: Vec<u8> = Vec::new();
 
             while num < self.out_len {
@@ -115,11 +115,11 @@ impl BMore {
             } else {
                 Terminal::clearscreen();
                 print!("*\r\n");
-                self.bytepos += num as i32;
+                self.bytepos += num;
                 lns -= 1;
             }
             if lns == 0 {
-                self.screen_home = self.bytepos - ((self.maxy + 1) * self.out_len) as i32;
+                self.screen_home = self.bytepos - ((self.maxy + 1) * self.out_len);
                 if self.screen_home < 0 {
                     self.screen_home = 0;
                     return Err(io::Error::new(ErrorKind::NotFound, "file does not exist"));
@@ -127,7 +127,6 @@ impl BMore {
                 return Ok(());
             }
         }
-        Ok(())
     }
 
     pub fn emsg(&mut self, s :&str) {
@@ -147,9 +146,8 @@ impl BMore {
 
     }
     pub fn set_size(&mut self) {
-        self.maxx = self.terminal.size().width;
-        self.maxy = self.terminal.size().height;
-        // dbg!("terminal: w: {self.maxx}, h: {self.maxy");
+        self.maxx = self.terminal.size().width as i32;
+        self.maxy = self.terminal.size().height as i32;
 
         if self.mymaxy > 0 {
             dbg!("Overwrite maxy");
@@ -211,9 +209,9 @@ impl BMore {
         self.screen_home = self.bytepos;
 
         if self.flags.ascii {
-            self.out_len = ((self.maxx - AnzAdd - 1) / 4) * 4;
+            self.out_len = (self.maxx - ANZADD / 4) * 4;
         } else {
-            self.out_len = ((self.maxx - AnzAdd - 1) / 16) * 4;
+            self.out_len = ((self.maxx - ANZADD - 1) / 16) * 4;
         }
 
         if self.mymaxx > 0 {
@@ -247,14 +245,25 @@ impl BMore {
                 break;
             }
             if self.to_print > 0 {
-                self.printout(&mut reader, self.to_print);
+                self.printout(&mut reader, self.to_print).unwrap_or_else(|err| println!("{:?}", err));
             }
 
 
         }
     }
 
+    fn fseeko(&mut self, off: i32) {
+
+        if self.precount < 1 {
+             self.precount = 1;
+        }
+        print!("\r");
+        Terminal::cleartoeol();
+
+    }
+
     fn process_keypress(&mut self) -> std::result::Result<(), std::io::Error> {
+        let mut count : i32 = 0;
         let pressed_key = Terminal::vgetc()?;
         match pressed_key {
             Key::Ctrl('Q') | Key::Char('q') => {
@@ -293,11 +302,17 @@ impl BMore {
             }
             /* Skip forward k screenfuls of bytes [1] */
             Key::Char('f') => {
-                dbg!("Press f");
+                count = self.maxy * self.precount;
+                print!("\n...skipping {} line", count);
+                self.screen_home += (count + self.maxy)*self.out_len;
+                self.fseeko(self.screen_home);
             }
             /* Skip forward k lines of bytes [1] */
             Key::Char('s') => {
-                dbg!("Press s");
+                count = self.precount;
+                print!("\n...skipping {} line", count);
+                self.screen_home += (count + self.maxy)*self.out_len;
+                self.fseeko(self.screen_home);
             }
             /**** Search String ****/
             Key::Char('/') => {
