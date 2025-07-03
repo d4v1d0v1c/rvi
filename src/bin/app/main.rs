@@ -4,6 +4,7 @@ mod bytereader;
 
 use std::fs::File;
 use std::io::{self, ErrorKind};
+use std::os::unix::process;
 use std::path::Path;
 use std::process::exit;
 use termion::event::Key;
@@ -412,7 +413,25 @@ fn die(e: std::io::Error) {
     panic!("{}", e);
 }
 
+fn run() -> Result<bool> {
+    BMore::default().run();
+    return Ok(true);
+}
+
 fn main() {
     println!("copyright: {COPYRIGHT:?}");
-    BMore::default().run();
+    let result = run();
+    match result {
+        Err(error) => {
+            let stderr = std::io::stderr();
+            // default_error_handler(&error, &mut stderr.lock());
+            process::exit(1);
+        }
+        Ok(false) => {
+            process::exit(1);
+        }
+        Ok(true) => {
+            process::exit(0);
+        }
+    }
 }
