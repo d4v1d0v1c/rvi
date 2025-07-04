@@ -1,0 +1,3 @@
+# Fish Shell Completions
+# Copy or symlink to $XDG_CONFIG_HOME/fish/completions/{{PROJECT_EXECUTABLE}}.fish
+# ($XDG_CONFIG_HOME is usually set to ~/.config)

@@ -1,0 +1,9 @@
+# shellcheck disable=SC2207
+
+# Requires https://github.com/scop/bash-completion
+
+# Macs have bash3 for which the bash-completion package doesn't include
+# _init_completion. This is a minimal version of that function.
+__rmore_init_completion()
+{
+}

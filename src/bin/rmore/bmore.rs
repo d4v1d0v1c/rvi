@@ -1,15 +1,15 @@
-// Usage: bmore [-acdir] [-lines] [+linenum | +/pattern] name1 name2 ...
-
-mod bytereader;
-
 use std::fs::File;
 use std::io::{self, ErrorKind};
-use std::os::unix::process;
+use termion::event::Key;
 use std::path::Path;
 use std::process::exit;
-use termion::event::Key;
-use util::{ANZADD, Options, Terminal,COPYRIGHT, USAGE};
-pub use bytereader::ByteReader;
+
+use rmore::bytereader::ByteReader;
+use rmore::config::Options;
+use rmore::consts::*;
+use rmore::simple::Terminal;
+
+use rmore::error::*;
 
 pub struct BMore {
     terminal: Terminal,
@@ -32,6 +32,10 @@ pub struct BMore {
     z_line : i32,
     d_line : i32,
     r_line : i32,
+}
+
+fn die(e: std::io::Error) {
+    panic!("{}", e);
 }
 
 
@@ -404,34 +408,6 @@ impl BMore {
             z_line : 0,
             d_line : 0,
             r_line : 0,
-        }
-    }
-}
-
-fn die(e: std::io::Error) {
-    Terminal::clearscreen();
-    panic!("{}", e);
-}
-
-fn run() -> Result<bool> {
-    BMore::default().run();
-    return Ok(true);
-}
-
-fn main() {
-    println!("copyright: {COPYRIGHT:?}");
-    let result = run();
-    match result {
-        Err(error) => {
-            let stderr = std::io::stderr();
-            // default_error_handler(&error, &mut stderr.lock());
-            process::exit(1);
-        }
-        Ok(false) => {
-            process::exit(1);
-        }
-        Ok(true) => {
-            process::exit(0);
         }
     }
 }

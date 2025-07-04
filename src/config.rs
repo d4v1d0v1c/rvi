@@ -1,6 +1,19 @@
-use std::env;
+use crate::area::ScreenArea;
 
-#[derive(Debug, Default)]
+#[derive(Debug, Clone, Default)]
+pub struct Config {
+    pub ascii: bool,
+    pub c_flag: bool,
+    pub d_flag: bool,
+    pub ignore_case: bool,
+    pub r_flag: bool,
+    pub init_search: bool,
+    pub ssearch: String,
+    pub area : ScreenArea,
+}
+
+/*
+#[derive(Debug, Clone, Default)]
 pub struct Options {
     pub ascii: bool,
     pub c_flag: bool,
@@ -10,7 +23,7 @@ pub struct Options {
     pub init_search: bool,
     pub ssearch: String,
     pub files: Vec<String>,
-    pub mymaxx: u16,
+pub mymaxx: u16,
     pub mymaxy: u16,
 }
 
@@ -52,3 +65,4 @@ impl Options {
         Ok(opts)
     }
 }
+  */

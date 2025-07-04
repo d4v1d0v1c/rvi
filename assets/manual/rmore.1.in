@@ -1,0 +1,14 @@
+.TH {{PROJECT_EXECUTABLE_UPPERCASE}} "1"
+.SH NAME
+{{PROJECT_EXECUTABLE}} \- a bmore(1) clone.
+.SH "USAGE"
+.IP "{{PROJECT_EXECUTABLE}} [OPTIONS] [FILE]..."
+.IP "{{PROJECT_EXECUTABLE}} cache [CACHE-OPTIONS] [--build|--clear]
+.SH DESCRIPTION
+{{PROJECT_EXECUTABLE}} prints hex values of the file to the terminal.If no FILE is specified, or when FILE is '-', 
+it reads from standard input.
+
+.SH "OPTIONS"
+For more information and up-to-date documentation, visit the {{PROJECT_EXECUTABLE}} repo:
+
+\fBhttps://github.com/d4v1d0v1c/rvi\fR
