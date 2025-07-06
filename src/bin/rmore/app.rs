@@ -3,14 +3,13 @@ use std::{env, path::Path};
 use std::io::IsTerminal;
 use rmore::area::ScreenArea;
 use rmore::error::*;
-use rmore::input::Input;
+use rmore::input::*;
 use rmore::config::Config;
-
-use crate::input::{new_file_input, new_stdin_input};
 
 use crate::{
     clap_app,
     config::{get_args_from_env_vars},
+    input::{new_file_input, new_stdin_input},
 };
 
 use clap::ArgMatches;
@@ -57,7 +56,9 @@ impl App {
                 r_flag: self.matches.get_flag("r_flag"), 
                 init_search: false, 
                 ssearch: String::new(), 
-                area: self.matches.get_one::<String>("range").map(|s| ScreenArea.from(s.as_str())),
+                area: self.matches.get_one::<String>("range").map(|s| ScreenArea::from(s.as_str())),
+            }
+        )
     }
 
     pub fn inputs(&self) -> Result<Vec<Input>> { 

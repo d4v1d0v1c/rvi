@@ -41,11 +41,8 @@ fn run() -> Result<bool> {
         return Ok(true);
     }
 
-    match app.matches.subcommand() {
-        let inputs = app.inputs()?; // receive all files from cmd line.
-        let config = app.config(&inputs)?;
-
-    }
+    let inputs = app.inputs()?; // receive all files from cmd line.
+    let config = app.config(&inputs)?;
 
 
     // BMore::default().run();

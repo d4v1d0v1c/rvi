@@ -1,22 +1,15 @@
 use crate::error::*;
 
-
-#[derive(Debug, Clone, Eq, PartialEq)]
-pub(crate) enum ScreenRange {
-    MaxX(usize),
-    MaxY(usize),
-}
-
 #[derive(Debug, Copy, Clone)]
 pub struct ScreenArea {
-    maxx : MaxX,
-    maxy : MaxY,
+    maxx : usize,
+    maxy : usize,
 }
 
 
 impl Default for ScreenArea {
     fn default() -> Self {
-        ScreenArea { maxx: (0), maxy: (0) }
+        ScreenArea { maxx: (0usize), maxy: (0usize) }
     }
 }
 
@@ -40,18 +33,18 @@ impl ScreenArea {
         if fist_byte == b':' {
             if range_iter.next() == Some(b'-') {
                 // -3 :)
-                new_range.maxy = ScreenRange::MaxY(0)
+                new_range.maxy = 0usize
             } else {
                 let value = range_raw[1..].parse()?;
-                new_range.maxy = ScreenRange::MaxY(value)
+                new_range.maxy = value
             }
             return Ok(new_range);
         } else if range_raw.bytes().last().ok_or("Empty MaxX:MaxY")? == b':' {
             if fist_byte == b'-' {
-                new_range.maxy = ScreenRange::MaxX(0)
+                new_range.maxy = 0usize
             } else {
                 let value = range_raw[1..range_raw.len()-1].parse()?;
-                new_range.maxy = ScreenRange::MaxX(value)
+                new_range.maxy = value
             }
             return Ok(new_range)            
         } 
@@ -59,13 +52,13 @@ impl ScreenArea {
         let line_numbers : Vec<&str> = range_raw.split(':').collect();
         match line_numbers.len() {
             1 => {
-                new_range.maxx = ScreenRange::MaxX(line_numbers[0].parse()?);
+                new_range.maxx = line_numbers[0].parse()?;
                 new_range.maxy = new_range.maxx;
                 Ok(new_range)
             }
             2 => {
-                new_range.maxx = ScreenRange::MaxX(line_numbers[0].parse()?);
-                new_range.maxy = ScreenRange::MaxY(line_numbers[0].parse()?);
+                new_range.maxx = line_numbers[0].parse()?;
+                new_range.maxy = line_numbers[0].parse()?;
                 Ok(new_range)                
             } 
             _ => Err("Unable to parse".into()),
