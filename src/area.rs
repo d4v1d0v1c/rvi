@@ -1,23 +1,29 @@
 use crate::error::*;
 
-#[derive(Debug, Copy, Clone)]
+
+#[derive(Debug, Clone, Eq, PartialEq)]
+pub(crate) enum ScreenRange {
+    Max(usize),
+}
+
+#[derive(Debug, Clone)]
 pub struct ScreenArea {
-    maxx : usize,
-    maxy : usize,
+    maxx : ScreenRange,
+    maxy : ScreenRange,
 }
 
 
 impl Default for ScreenArea {
     fn default() -> Self {
-        ScreenArea { maxx: (0usize), maxy: (0usize) }
+        ScreenArea { maxx: ScreenRange::Max(0usize), maxy: ScreenRange::Max(0usize) }
     }
 }
 
 impl ScreenArea {
     pub fn new(x : usize, y: usize) -> Self {
         ScreenArea {
-            maxx: x,
-            maxy: y,
+            maxx: ScreenRange::Max(x),
+            maxy: ScreenRange::Max(y),
         }
     }
 
@@ -33,32 +39,32 @@ impl ScreenArea {
         if fist_byte == b':' {
             if range_iter.next() == Some(b'-') {
                 // -3 :)
-                new_range.maxy = 0usize
+                new_range.maxy = ScreenRange::Max(0usize)
             } else {
                 let value = range_raw[1..].parse()?;
-                new_range.maxy = value
+                new_range.maxy = ScreenRange::Max(value)
             }
             return Ok(new_range);
         } else if range_raw.bytes().last().ok_or("Empty MaxX:MaxY")? == b':' {
             if fist_byte == b'-' {
-                new_range.maxy = 0usize
+                new_range.maxy = ScreenRange::Max(0usize)
             } else {
                 let value = range_raw[1..range_raw.len()-1].parse()?;
-                new_range.maxy = value
+                new_range.maxy = ScreenRange::Max(value)
             }
             return Ok(new_range)            
         } 
 
         let line_numbers : Vec<&str> = range_raw.split(':').collect();
         match line_numbers.len() {
-            1 => {
-                new_range.maxx = line_numbers[0].parse()?;
-                new_range.maxy = new_range.maxx;
+            1 => {                
+                new_range.maxx = ScreenRange::Max(line_numbers[0].parse()?);
+                new_range.maxy = ScreenRange::Max(line_numbers[0].parse()?);
                 Ok(new_range)
             }
             2 => {
-                new_range.maxx = line_numbers[0].parse()?;
-                new_range.maxy = line_numbers[0].parse()?;
+                new_range.maxx = ScreenRange::Max(line_numbers[0].parse()?);
+                new_range.maxy = ScreenRange::Max(line_numbers[0].parse()?);
                 Ok(new_range)                
             } 
             _ => Err("Unable to parse".into()),

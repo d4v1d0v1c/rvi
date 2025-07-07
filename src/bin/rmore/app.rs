@@ -1,18 +1,21 @@
 use std::path::PathBuf;
 use std::{env, path::Path};
 use std::io::IsTerminal;
-use rmore::area::ScreenArea;
-use rmore::error::*;
-use rmore::input::*;
-use rmore::config::Config;
 
 use crate::{
     clap_app,
-    config::{get_args_from_env_vars},
-    input::{new_file_input, new_stdin_input},
+    config::{get_args_from_env_vars},    
 };
-
 use clap::ArgMatches;
+use rmore::area;
+use crate::input::{new_file_input, new_stdin_input};
+
+use rmore:: {
+    area::ScreenArea,
+    error::*,
+    input::Input,
+    config::Config,
+};
 
 pub fn env_no_color() -> bool {
     env::var_os("NO_COLOR").is_some_and(|x| !x.is_empty())
@@ -39,10 +42,25 @@ impl App {
         })
     }
 
-    fn matches(interactive_output: bool) -> Result<ArgMatches> {
+    fn matches(interactive_output: bool) -> Result<ArgMatches> {            
+/*
+        let args = if wild::args_os().any(|arg| arg == "--no-config") {
+            let mut cli_args = wild::args_os();
+            print!("cli_args: {:?}\n", cli_args);
+        
+            let mut args = get_args_from_env_vars();
+            args.insert(0, cli_args.next().unwrap());
+            cli_args.for_each(|a| args.push(a));
+            args
+        } else { 
+            //TODO: add reading configuration file
+
+        }
+ */                
         let mut cli_args = wild::args_os();
         let mut args = get_args_from_env_vars();
         args.insert(0, cli_args.next().unwrap());
+        cli_args.for_each(|a| args.push(a));
 
         Ok(clap_app::build_app(interactive_output).get_matches_from(args))
     }
@@ -56,21 +74,22 @@ impl App {
                 r_flag: self.matches.get_flag("r_flag"), 
                 init_search: false, 
                 ssearch: String::new(), 
-                area: self.matches.get_one::<String>("range").map(|s| ScreenArea::from(s.as_str())),
-            }
+                area: self.matches.get_one::<String>("range").map(|s| ScreenArea::from(s.as_str()).unwrap()).unwrap_or_default(),
+            },
         )
     }
 
     pub fn inputs(&self) -> Result<Vec<Input>> { 
+
         let filenames: Option<Vec<&Path>> = self
             .matches
             .get_many::<PathBuf>("file-name")
             .map(|vs| vs.map(|p| p.as_path()).collect::<Vec<_>>());
+
         let files: Option<Vec<&Path>> = self
             .matches
             .get_many::<PathBuf>("FILE")
             .map(|vs| vs.map(|p| p.as_path()).collect::<Vec<_>>());
-
         if filenames.is_some() && files.is_some() && filenames.as_ref().map(|v| v.len()) != files.as_ref().map(|v| v.len()) {
             return Err("Must be one file name per input type.".into());
         }

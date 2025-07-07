@@ -92,7 +92,7 @@ pub fn build_app(interactive_output: bool) -> Command {
             .long("range")
             .action(ArgAction::Append)
             .value_name("X:Y")
-            .short('r')
+            .short('g')
             .help("Set maxx:maxy")
             .long_help("Set maxx & maxy values, explain in details")
         )
@@ -113,7 +113,19 @@ pub fn build_app(interactive_output: bool) -> Command {
             .long("set-terminal-title")
             .action(ArgAction::SetTrue)
             .hide_short_help(true)
-            .help("Sets terminal title to filenames when using a pager."),
+            .help("Sets terminal title to filenames when using a pager.")
+        )   
+        .arg(Arg::new("file-name")
+            .long("file-name")
+            .action(ArgAction::Append)
+            .value_name("name")
+            .value_parser(value_parser!(PathBuf))
+            .help("Specify the name to display for a file.")
+            .long_help(
+                    "Specify the name to display for a file. Useful when piping \
+                     data to bat from STDIN when bat does not otherwise know \
+                     the filename. Note that the provided file name is also \
+                     used for syntax detection."),
         );
-        app
+    app
 }

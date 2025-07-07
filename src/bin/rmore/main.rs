@@ -4,11 +4,10 @@ use std::process;
 mod app;
 mod clap_app;
 mod config;
+mod input;
 
 use rmore::consts::COPYRIGHT;
 use rmore::error::*;
-use rmore::input::*;
-use rmore::config::Config;
 
 use crate::{
     app::App,
@@ -43,7 +42,7 @@ fn run() -> Result<bool> {
 
     let inputs = app.inputs()?; // receive all files from cmd line.
     let config = app.config(&inputs)?;
-
+    print!("Config: {:?}", config);
 
     // BMore::default().run();
     Ok(true)
