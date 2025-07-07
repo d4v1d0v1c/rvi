@@ -1,13 +1,14 @@
 // Usage: bmore [-acdir] [-lines] [+linenum | +/pattern] name1 name2 ...
 use std::process;
-
 mod app;
 mod clap_app;
 mod config;
 mod input;
 
+use rmore::config::Config;
 use rmore::consts::COPYRIGHT;
 use rmore::error::*;
+use rmore::input::*;
 
 use crate::{
     app::App,
@@ -29,6 +30,9 @@ fn invoke_bugreport(app: &App) {
     report.print::<Markdown>();
 }
 
+fn run_controller(inputs: Vec<Input>, config: &Config) -> Result<bool> {
+    Ok(true)
+}
 fn run() -> Result<bool> {
     let app = App::new()?;
     
@@ -42,14 +46,16 @@ fn run() -> Result<bool> {
 
     let inputs = app.inputs()?; // receive all files from cmd line.
     let config = app.config(&inputs)?;
-    print!("Config: {:?}", config);
-
-    // BMore::default().run();
-    Ok(true)
+    if app.matches.get_flag("acknowledgements") {
+         println!("{COPYRIGHT}");
+        // writeln!(io::stdout(), "{}", rmore::assets::get_acknowledgements())?;
+        Ok(true)
+    } else {
+        run_controller(inputs, &config)
+    }
 }
 
 fn main() {
-    println!("copyright: {COPYRIGHT:?}");
     let result = run();
     match result {
         Err(error) => {
